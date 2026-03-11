@@ -1,0 +1,177 @@
+The image shows **SQL practice questions (31–43)** related to joins, views, unions, and subqueries. Below are **sample SQL solutions** based on the common **HR database structure** (`employees`, `departments`, `locations`, `jobs`, `dependents`).
+
+---
+
+## **31. Employees who have or do not have a department (LEFT JOIN)**
+
+```sql
+SELECT e.first_name, e.last_name, d.department_id, d.department_name
+FROM employees e
+LEFT JOIN departments d
+ON e.department_id = d.department_id;
+```
+
+---
+
+## **32. Employees whose first name contains 'Z'**
+
+```sql
+SELECT e.first_name, e.last_name, d.department_name, l.city, l.state_province
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id
+JOIN locations l ON d.location_id = l.location_id
+WHERE e.first_name LIKE '%Z%';
+```
+
+---
+
+## **33. All departments including those without employees**
+
+```sql
+SELECT e.first_name, e.last_name, d.department_id, d.department_name
+FROM departments d
+LEFT JOIN employees e
+ON d.department_id = e.department_id;
+```
+
+---
+
+## **34. Employees and their managers**
+
+```sql
+SELECT e.first_name AS employee,
+       m.first_name AS manager
+FROM employees e
+LEFT JOIN employees m
+ON e.manager_id = m.employee_id;
+```
+
+---
+
+## **35. Employees in the same department as 'Taylor'**
+
+```sql
+SELECT first_name, last_name, department_id
+FROM employees
+WHERE department_id = (
+    SELECT department_id
+    FROM employees
+    WHERE last_name = 'Taylor'
+);
+```
+
+---
+
+## **36. Difference between max job salary and employee salary**
+
+```sql
+SELECT j.job_title,
+       e.first_name,
+       (j.max_salary - e.salary) AS salary_difference
+FROM employees e
+JOIN jobs j ON e.job_id = j.job_id;
+```
+
+---
+
+## **37. Average salary and number of employees in each department**
+
+```sql
+SELECT d.department_name,
+       AVG(e.salary) AS avg_salary,
+       COUNT(e.employee_id) AS num_employees
+FROM departments d
+LEFT JOIN employees e
+ON d.department_id = e.department_id
+GROUP BY d.department_name;
+```
+
+---
+
+## **38. Create a view for employees whose department is in Delhi**
+
+```sql
+CREATE VIEW delhi_emp_view AS
+SELECT e.employee_id,
+       e.first_name,
+       e.last_name,
+       e.phone_number,
+       j.job_title,
+       d.department_name,
+       m.first_name AS manager_name
+FROM employees e
+JOIN jobs j ON e.job_id = j.job_id
+JOIN departments d ON e.department_id = d.department_id
+JOIN locations l ON d.location_id = l.location_id
+LEFT JOIN employees m ON e.manager_id = m.employee_id
+WHERE l.city = 'Delhi';
+```
+
+---
+
+## **39. From the view: job title 'Manager' and department 'Finance'**
+
+```sql
+SELECT *
+FROM delhi_emp_view
+WHERE job_title = 'Manager'
+AND department_name = 'Finance';
+```
+
+---
+
+## **40. Update phone number for employee named Smith using the view**
+
+```sql
+UPDATE delhi_emp_view
+SET phone_number = '9999999999'
+WHERE last_name = 'Smith';
+```
+
+*(Works only if the DB allows updating through views.)*
+
+---
+
+## **41. Employees with no dependents**
+
+```sql
+SELECT *
+FROM employees e
+WHERE e.employee_id NOT IN (
+    SELECT employee_id FROM dependents
+);
+```
+
+---
+
+## **42. Employees whose manager_id is 101 or 201 using UNION**
+
+```sql
+SELECT * FROM employees
+WHERE manager_id = 101
+
+UNION
+
+SELECT * FROM employees
+WHERE manager_id = 201;
+```
+
+---
+
+## **43. Employees who have at least one dependent**
+
+```sql
+SELECT DISTINCT e.*
+FROM employees e
+JOIN dependents d
+ON e.employee_id = d.employee_id;
+```
+
+---
+
+✅ If you want, I can also give:
+
+* **Short exam-ready answers (clean and minimal)**
+* **ER diagram of the HR database**
+* **Explanation of each query for viva**.
+
