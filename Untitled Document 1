@@ -1,0 +1,208 @@
+mysql> show tables;
++----------------------+
+| Tables_in_hospital   |
++----------------------+
+| Nurse                |
+| Patient              |
+| Physician            |
+| Physician_Speciality |
+| ward                 |
++----------------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT pat_ID, Ward_num from Patient;
++--------+----------+
+| pat_ID | Ward_num |
++--------+----------+
+|    201 |       10 |
+|    202 |       10 |
+|    205 |       10 |
+|    203 |       20 |
+|    204 |       30 |
+|    206 |       30 |
++--------+----------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT p.pat_fname, p.pat_Lname, ph.Phy_fname, ph.Phy_Lname FROM Patient p JOIN Physician ph ON p.phy_id = ph.Phy_ID WHERE p.Ward_num IS NOT NULL;
++-----------+-----------+-----------+-----------+
+| pat_fname | pat_Lname | Phy_fname | Phy_Lname |
++-----------+-----------+-----------+-----------+
+| David     | John      | Sreekumar | Nair      |
+| Diana     | Paul      | Sreekumar | Nair      |
+| Dev       | Raj       | Sreekumar | Nair      |
+| Arun      | Kumar     | Anita     | Menon     |
+| Meena     | Das       | Ravi      | Kumar     |
+| Rahul     | Nair      | Deepak    | Raj       |
++-----------+-----------+-----------+-----------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT p.*FROM Patient p JOIN Physician ph ON p.phy_id = ph.Phy_ID WHERE p.pat_fname LIKE 'D%' AND ph.Phy_fname = 'Sreekumar';
++--------+-----------+-----------+------+--------+----------+------------+
+| pat_ID | pat_fname | pat_Lname | Age  | phy_id | Ward_num | admit_date |
++--------+-----------+-----------+------+--------+----------+------------+
+|    201 | David     | John      |   65 |      1 |       10 | 2025-02-10 |
+|    202 | Diana     | Paul      |   70 |      1 |       10 | 2025-02-12 |
+|    205 | Dev       | Raj       |   62 |      1 |       10 | 2025-02-20 |
++--------+-----------+-----------+------+--------+----------+------------+
+3 rows in set (0.00 sec)
+
+mysql> INSERT INTO Patient (pat_ID, pat_fname, pat_Lname, Age, phy_id, Ward_num, admit_date)
+    -> VALUES (101, 'Rahul', 'Sharma', 30, 1, 10, '2025-03-01'); ^C/c
+/c
+^C
+mysql> INSERT INTO Patient (pat_ID, pat_fname, pat_Lname, Age, phy_id, Ward_num, admit_date)
+    -> Aborted
+s2mca11@cc2-Vostro-3470:~$ mysql
+ERROR 1045 (28000): Access denied for user 's2mca11'@'localhost' (using password: NO)
+s2mca11@cc2-Vostro-3470:~$ mysql -u s2mca11 -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 12
+Server version: 8.0.42-0ubuntu0.20.04.1 (Ubuntu)
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> INSERT INTO Patient (pat_ID, pat_fname, pat_Lname, Age, phy_id, Ward_num, admit_date)VALUES (101, 'Rahul', 'Sharma', 30, 1, 10, '2025-03-01');
+ERROR 1046 (3D000): No database selected
+mysql> use hospital
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> INSERT INTO Patient (pat_ID, pat_fname, pat_Lname, Age, phy_id, Ward_num, admit_date)VALUES (101, 'Rahul', 'Sharma', 30, 1, 10, '2025-03-01');
+Query OK, 1 row affected (0.07 sec)
+
+mysql> SELECT n.*FROM Nurse n JOIN ward w ON n.Nurse_id = w.Nurse_id WHERE w.ward_no = 10;
++----------+-------------+-------------+-------+
+| Nurse_id | nurse_fname | nurse_Lname | shift |
++----------+-------------+-------------+-------+
+|      101 | Lakshmi     | Nair        | Day   |
++----------+-------------+-------------+-------+
+1 row in set (0.00 sec)
+
+mysql> select * from  Physician where salary >50000;
++--------+-----------+-----------+------------+----------+--------+
+| Phy_ID | Phy_fname | Phy_Lname | address    | salary   | Degree |
++--------+-----------+-----------+------------+----------+--------+
+|      1 | Sreekumar | Nair      | Kochi      | 70000.00 | MD     |
+|      2 | Anita     | Menon     | Trivandrum | 55000.00 | MBBS   |
+|      4 | Deepak    | Raj       | Kollam     | 60000.00 | MD     |
+|      5 | Meera     | Das       | Thrissur   | 52000.00 | MBBS   |
++--------+-----------+-----------+------------+----------+--------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT DISTINCT Field_of_the_specialization FROM Physician_Speciality;
++-----------------------------+
+| Field_of_the_specialization |
++-----------------------------+
+| Cardiology                  |
+| Neurology                   |
+| Ortho                       |
+| ENT                         |
+| Pediatrics                  |
++-----------------------------+
+5 rows in set (0.02 sec)
+
+mysql> SELECT ph.* FROM Physician ph JOIN Physician_Speciality ps ON ph.Phy_ID = ps.Phy_ID WHERE LENGTH(ps.Field_of_the_specialization) < 5;
++--------+-----------+-----------+---------+----------+--------+
+| Phy_ID | Phy_fname | Phy_Lname | address | salary   | Degree |
++--------+-----------+-----------+---------+----------+--------+
+|      4 | Deepak    | Raj       | Kollam  | 60000.00 | MD     |
++--------+-----------+-----------+---------+----------+--------+
+1 row in set (0.00 sec)
+
+mysql> SELECT Phy_fname, Phy_Lname, salary FROM Physician;
++-----------+-----------+----------+
+| Phy_fname | Phy_Lname | salary   |
++-----------+-----------+----------+
+| Sreekumar | Nair      | 70000.00 |
+| Anita     | Menon     | 55000.00 |
+| Ravi      | Kumar     | 48000.00 |
+| Deepak    | Raj       | 60000.00 |
+| Meera     | Das       | 52000.00 |
++-----------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT Phy_fname, Phy_Lname FROM Physician WHERE LENGTH(Phy_fname) = 5;
++-----------+-----------+
+| Phy_fname | Phy_Lname |
++-----------+-----------+
+| Anita     | Menon     |
+| Meera     | Das       |
++-----------+-----------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT DISTINCT Field_of_the_specialization FROM Physician_Speciality WHERE Field_of_the_specialization NOT LIKE 'P%';
++-----------------------------+
+| Field_of_the_specialization |
++-----------------------------+
+| Cardiology                  |
+| Neurology                   |
+| Ortho                       |
+| ENT                         |
++-----------------------------+
+4 rows in set (0.01 sec)
+
+mysql> SELECT nurse_fname, nurse_Lname, shift FROM Nurse;
++-------------+-------------+-------+
+| nurse_fname | nurse_Lname | shift |
++-------------+-------------+-------+
+| Lakshmi     | Nair        | Day   |
+| Rina        | Paul        | Night |
+| Anu         | Joseph      | Day   |
+| Divya       | Kumar       | Night |
++-------------+-------------+-------+
+4 rows in set (0.01 sec)
+
+mysql> SELECT p.* FROM Patient p JOIN Physician_Speciality ps ON p.phy_id = ps.Phy_ID WHERE p.Age > 60 AND ps.Field_of_the_specialization = 'Cardiology';
++--------+-----------+-----------+------+--------+----------+------------+
+| pat_ID | pat_fname | pat_Lname | Age  | phy_id | Ward_num | admit_date |
++--------+-----------+-----------+------+--------+----------+------------+
+|    201 | David     | John      |   65 |      1 |       10 | 2025-02-10 |
+|    202 | Diana     | Paul      |   70 |      1 |       10 | 2025-02-12 |
+|    205 | Dev       | Raj       |   62 |      1 |       10 | 2025-02-20 |
++--------+-----------+-----------+------+--------+----------+------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT ward_name FROM ward WHERE No_of_beds > 25;
++-----------+
+| ward_name |
++-----------+
+| General   |
+| Surgery   |
++-----------+
+2 rows in set (0.01 sec)
+
+mysql> SELECT p.pat_fname, p.pat_Lname, ph.Phy_fname, ph.Phy_Lname, w.ward_name FROM Patient p JOIN Physician ph ON p.phy_id = ph.Phy_ID JOIN ward w ON p.Ward_num = w.ward_no;
++-----------+-----------+-----------+-----------+-----------+
+| pat_fname | pat_Lname | Phy_fname | Phy_Lname | ward_name |
++-----------+-----------+-----------+-----------+-----------+
+| Rahul     | Sharma    | Sreekumar | Nair      | General   |
+| David     | John      | Sreekumar | Nair      | General   |
+| Diana     | Paul      | Sreekumar | Nair      | General   |
+| Arun      | Kumar     | Anita     | Menon     | ICU       |
+| Meena     | Das       | Ravi      | Kumar     | Surgery   |
+| Dev       | Raj       | Sreekumar | Nair      | General   |
+| Rahul     | Nair      | Deepak    | Raj       | Surgery   |
++-----------+-----------+-----------+-----------+-----------+
+7 rows in set (0.01 sec)
+
+mysql> SELECT ph.Phy_fname, ph.Phy_Lname, COUNT(p.pat_ID) AS total_patients FROM Physician ph LEFT JOIN Patient p ON ph.Phy_ID = p.phy_id GROUP BY ph.Phy_ID, ph.Phy_fname, ph.Phy_Lname;
++-----------+-----------+----------------+
+| Phy_fname | Phy_Lname | total_patients |
++-----------+-----------+----------------+
+| Sreekumar | Nair      |              4 |
+| Anita     | Menon     |              1 |
+| Ravi      | Kumar     |              1 |
+| Deepak    | Raj       |              1 |
+| Meera     | Das       |              0 |
++-----------+-----------+----------------+
+5 rows in set (0.01 sec)
+
+
