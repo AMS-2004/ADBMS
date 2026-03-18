@@ -1,0 +1,74 @@
+1. Patient number and ward number of all patients
+SELECT pat_ID, Ward_num
+FROM Patient;
+2. Patient name and their physician (for patients assigned to a ward)
+SELECT p.pat_fname, p.pat_Lname, ph.Phy_fname, ph.Phy_Lname
+FROM Patient p
+JOIN Physician ph ON p.phy_id = ph.Phy_ID
+WHERE p.Ward_num IS NOT NULL;
+3. Patients whose first name starts with 'D' and treated by "Sreekumar"
+SELECT p.*
+FROM Patient p
+JOIN Physician ph ON p.phy_id = ph.Phy_ID
+WHERE p.pat_fname LIKE 'D%' 
+AND ph.Phy_fname = 'Sreekumar';
+4. Add new patient and display nurse details
+INSERT INTO Patient (pat_ID, pat_fname, pat_Lname, Age, phy_id, Ward_num, admit_date)
+VALUES (101, 'Rahul', 'Sharma', 30, 1, 10, '2025-03-01');
+
+SELECT n.*
+FROM Nurse n
+JOIN ward w ON n.Nurse_id = w.Nurse_id
+WHERE w.ward_no = 10;
+5. Physicians earning more than Rs. 50000
+SELECT *
+FROM Physician
+WHERE salary > 50000;
+6. Unique specialization areas
+SELECT DISTINCT Field_of_the_specialization
+FROM Physician_Speciality;
+7. Physicians whose specialization length < 5
+SELECT ph.*
+FROM Physician ph
+JOIN Physician_Speciality ps ON ph.Phy_ID = ps.Phy_ID
+WHERE LENGTH(ps.Field_of_the_specialization) < 5;
+8. Physician names and monthly salary
+SELECT Phy_fname, Phy_Lname, salary
+FROM Physician;
+9. Physicians with first name of 5 letters
+SELECT Phy_fname, Phy_Lname
+FROM Physician
+WHERE LENGTH(Phy_fname) = 5;
+10. Specializations not starting with 'P'
+SELECT DISTINCT Field_of_the_specialization
+FROM Physician_Speciality
+WHERE Field_of_the_specialization NOT LIKE 'P%';
+11. All nurses with their shift
+SELECT nurse_fname, nurse_Lname, shift
+FROM Nurse;
+12. Patients > 60 years treated by Cardiologists
+SELECT p.*
+FROM Patient p
+JOIN Physician_Speciality ps ON p.phy_id = ps.Phy_ID
+WHERE p.Age > 60 
+AND ps.Field_of_the_specialization = 'Cardiology';
+13. Wards with more than 25 beds
+SELECT ward_name
+FROM ward
+WHERE No_of_beds > 25;
+14. Admitted patients with physician and ward name
+SELECT p.pat_fname, p.pat_Lname, ph.Phy_fname, ph.Phy_Lname, w.ward_name
+FROM Patient p
+JOIN Physician ph ON p.phy_id = ph.Phy_ID
+JOIN ward w ON p.Ward_num = w.ward_no;
+15. Doctors grouped by number of patients assigned
+SELECT ph.Phy_fname, ph.Phy_Lname, COUNT(p.pat_ID) AS total_patients
+FROM Physician ph
+LEFT JOIN Patient p ON ph.Phy_ID = p.phy_id
+GROUP BY ph.Phy_ID, ph.Phy_fname, ph.Phy_Lname;
+
+If you want, I can also:
+
+Create sample data (INSERT statements) for all tables
+
+Or convert these into Oracle / MySQL / PostgreSQL specific syntax 👍
